@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block titulo %}Libros Favoritos{% endblock %}
+
+{% block content %}
+<h1>Bienvenido {{ user.first_names }}</h1>
+<div class="row">
+    <div class="col-lg-6 col-sm-12">
+        <h1>Agrega un nuevo libro</h1>
+        <form action="/librosfavoritos/newbook" method="post"> {% csrf_token %}
+            <form>
+                <div class="form-group">
+                    <label for="title">Titulo</label>
+                    <input type="text" name="title" class="form-control" id="title">
+                </div>
+                <div class="form-group">
+                    <label for="desc">Descripción</label>
+                    <textarea name="desc" id="desc" cols="30" class="form-control" style="resize: none;"
+                        rows="10"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Agregar libro</button>
+            </form>
+        </form>
+    </div>
+    <div class="col-lg-6 col-sm-12">
+        <h1>Lista de libros</h1>
+        {% if books %}
+        {% for book in books %}
+        <ul>
+            <a href="{{ book.id }}" class="h5" style="text-decoration:none; color:#000">{{ book.title }}</a>
+            <li>Descripción: {{book.description}}</li>
+            <li>Subido por: {{book.uploaded_by.first_names}} {{ book.uploaded_by.last_names}}</li>
+            <li>Agregado el: {{ book.created_at }}</li>
+            <li>Usuarios a quienes les gusta este libro:</li>
+            <ul>
+                {% for user in book.liked_by.all %}
+                <li>{{ user }}</li>
+                {% endfor %}
+            </ul>
+            {% if user not in book.liked_by.all %}
+            <a href="{{ book.id }}/like" class="btn btn-primary">Like</a>
+            {% else %}
+            <a href="{{ book.id }}/dislike" class="btn btn-danger">Dislike</a>
+            {% endif %}
+        </ul>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

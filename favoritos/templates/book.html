@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block titulo %} {{ book.title }} {% endblock %}
+{% block content %}
+
+{% if book.uploaded_by.id == request.session.user %}
+<div class="row mt-4">
+    <div class="col-6">
+        <form action="{{book.id}}/update" method="post"> {% csrf_token %}
+            <div class="form-group">
+                <label for="title">Titulo</label>
+                <input type="text" name="title" class="form-control" value="{{ book.title }}" id="title">
+            </div>
+            <ul>
+                <li>Agregado por: {{ book.uploaded_by }}</li>
+                <li>Agregado el: {{ book.created_at | date:'d-M-Y h:i' }}</li>
+                <li>Actualizado por ultima vez el: {{ book.updated_at | date:'d-M-Y h:i' }}</li>
+            </ul>
+            <div class="form-group">
+                <label for="desc">Descripción</label>
+                <textarea name="desc" id="desc" cols="30" class="form-control" style="resize: none;"
+                    rows="10">{{ book.description }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-secondary">Actualizar</button>
+            <a href="{{ book.id }}/delete" class="btn btn-danger">Borrar</a>
+        </form>
+    </div>
+    <div class="col-6">
+        <h1>Usuarios a los que les gusta este libro:</h1>
+        <ul>
+            {% for user in book.liked_by.all %}
+            <li>{{ user }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-6">
+        <h1>{{ book.title }}</h1>
+        <ul>
+            <li>Agregado por: {{ book.uploaded_by }}</li>
+            <li>Agregado el: {{ book.created_at | date:'d-M-Y h:i' }}</li>
+            <li>Actualizado por ultima vez el: {{ book.updated_at | date:'d-M-Y h:i' }}</li>
+        </ul>
+        <h4>Descripción</h4>
+        <p>{{ book.description }}</p>
+    </div>
+    <div class="col-6">
+        <h1>Usuarios a los que les gusta este libro:</h1>
+        <ul>
+            {% for user in book.liked_by.all %}
+            <li>{{ user.first_names }} {{ user.last_names }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
