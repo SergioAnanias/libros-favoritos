@@ -14,6 +14,11 @@ def index(request):
 
 def newbook(request):
     if request.method == 'POST':
+        errors = Book.objects.validator(request.POST)
+        if len(errors) > 0:
+            for k, v in errors.items():
+                messages.error(request, v)
+            return redirect("/librosfavoritos")
         newbook= Book.objects.create(
             title=request.POST['title'],
             description=request.POST['desc'],
@@ -48,7 +53,7 @@ def delete(request, id):
     book= Book.objects.get(id=id)
     book.delete()
     return redirect('/librosfavoritos')
-    
+
 @loginauth
 def dislike(request, id):
     book = Book.objects.get(id=id)
